@@ -1,0 +1,42 @@
+{
+  "id": "/test-docker",
+  "cmd": "while true; do date >> /mnt/mesos/sandbox/test-rexray-volume/date.txt && sleep 30; done",
+  "cpus": 0.1,
+  "mem": 32,
+  "disk": 0,
+  "instances": 1,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/mnt/mesos/sandbox/test-rexray-volume",
+        "mode": "RW",
+        "external": {
+          "name": "testvol",
+          "provider": "dvdi",
+          "options": {
+            "dvdi/driver": "rexray"
+          }
+        }
+      }
+    ],
+    "docker": {
+      "image": "alpine:3.1",
+      "network": "HOST",
+      "privileged": false,
+      "parameters": [],
+      "forcePullImage": true
+    }
+  },
+  "portDefinitions": [
+    {
+      "port": 10001,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  }
+}
