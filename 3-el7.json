@@ -1,0 +1,635 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "VPC with custom OS",
+  "Mappings": {
+    "SubnetConfig": {
+      "VPC": {
+        "CIDR": "10.10.0.0/16"
+      },
+      "Public": {
+        "CIDR": "10.10.0.0/24"
+      }
+    },
+    "SDBSnapshot": {
+      "us-west-2": {
+        "snap": "snap-00ae1a58"
+      },
+      "us-west-1": {
+        "snap": "snap-2f2c1516"
+      },
+      "sa-east-1": {
+        "snap": "snap-356b2302"
+      },
+      "us-east-1": {
+        "snap": "snap-5f580f42"
+      },
+      "ap-southeast-1": {
+        "snap": "snap-a7be23b6"
+      },
+      "ap-southeast-2": {
+        "snap": "snap-e1f4bfed"
+      },
+      "ap-northeast-1": {
+        "snap": "snap-b970ec81"
+      },
+      "eu-west-1": {
+        "snap": "snap-056ada2d"
+      },
+      "eu-central-1": {
+        "snap": "snap-2c830027"
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "EC2 PV instance type (m3.medium, etc).",
+      "Type": "String",
+      "Default": "m4.xlarge",
+      "ConstraintDescription": "Must be a valid EC2 PV instance type."
+    },
+    "AmiCode": {
+      "Description": "Image id of desired OS",
+      "Type": "String"
+    },
+    "ClusterSize": {
+      "Default": "3",
+      "MinValue": "1",
+      "MaxValue": "100",
+      "Description": "Number of nodes in cluster (1-100).",
+      "Type": "Number"
+    },
+    "AllowAccessFrom": {
+      "Description": "The (CIDR) from which cluster is available",
+      "Default": "0.0.0.0/0",
+      "Type": "String"
+    },
+    "KeyPair": {
+      "Description": "The name of an EC2 Key Pair to allow SSH access to the instance.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": {
+          "Fn::FindInMap": [
+            "SubnetConfig",
+            "VPC",
+            "CIDR"
+          ]
+        },
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Network",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "8feb1b9e-b3db-4aba-8790-257cf79bdd87"
+        }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Fn::FindInMap": [
+            "SubnetConfig",
+            "Public",
+            "CIDR"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Network",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "c8ab05e8-eed6-4804-b8be-ba1cdd3a5b97"
+        }
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Network",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "69635053-d1e2-4b01-921f-4be2a04742e1"
+        }
+      }
+    },
+    "GatewayToInternet": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "3ac5b8f2-42b1-4595-b7b7-a287e102e9e3"
+        }
+      }
+    },
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": {
+              "Ref": "AWS::StackId"
+            }
+          },
+          {
+            "Key": "Network",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "8d580c64-efff-45be-882e-967ce255dcfd"
+        }
+      }
+    },
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "GatewayToInternet",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "daea27c9-86cc-41a8-a12d-3a534b285d71"
+        }
+      }
+    },
+    "PublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "3ba17df0-71d7-47dd-a4c6-78b127a84441"
+        }
+      }
+    },
+    "CentOSSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "CentOS SecurityGroup",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "CidrIp": {
+              "Ref": "AllowAccessFrom"
+            }
+          },
+          {
+            "IpProtocol": "udp",
+            "FromPort": "0",
+            "ToPort": "65535",
+            "CidrIp": {
+              "Ref": "AllowAccessFrom"
+            }
+          },
+          {
+            "IpProtocol": "icmp",
+            "FromPort": "-1",
+            "ToPort": "-1",
+            "CidrIp": {
+              "Ref": "AllowAccessFrom"
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "8925b521-77c7-4763-9f71-0958a11266af"
+        }
+      }
+    },
+    "CentOSRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "CentOSServers",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Resource": [
+                    {
+                      "Ref": "AWS::StackId"
+                    },
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "AWS::StackId"
+                          },
+                          "/*"
+                        ]
+                      ]
+                    }
+                  ],
+                  "Action": [
+                    "cloudformation:*"
+                  ],
+                  "Effect": "Allow"
+                },
+                {
+                  "Resource": "*",
+                  "Action": [
+                    "ec2:CreateTags",
+                    "ec2:DescribeInstances",
+                    "ec2:CreateVolume",
+                    "ec2:DeleteVolume",
+                    "ec2:AttachVolume",
+                    "ec2:DetachVolume",
+                    "ec2:DescribeVolumes",
+                    "ec2:DescribeVolumeStatus",
+                    "ec2:DescribeVolumeAttribute",
+                    "ec2:CreateSnapshot",
+                    "ec2:CopySnapshot",
+                    "ec2:DeleteSnapshot",
+                    "ec2:DescribeSnapshots",
+                    "ec2:DescribeSnapshotAttribute"
+                  ],
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "0586f22f-7c77-48e8-9e9e-9f7fe43467c1"
+        }
+      }
+    },
+    "CentOSInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "CentOSRole"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "91530628-c66c-4d18-bad2-363898cc8249"
+        }
+      }
+    },
+    "CentOSServerAutoScale": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "DependsOn": "PublicRoute",
+      "Properties": {
+        "AvailabilityZones": [
+          {
+            "Fn::GetAtt": [
+              "PublicSubnet",
+              "AvailabilityZone"
+            ]
+          }
+        ],
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "PublicSubnet"
+          }
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "CentOSServerLaunchConfig"
+        },
+        "MinSize": "1",
+        "MaxSize": "100",
+        "DesiredCapacity": {
+          "Ref": "ClusterSize"
+        },
+        "Tags": [
+          {
+            "Key": "Network",
+            "Value": "Public",
+            "PropagateAtLaunch": "true"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "6bb4b187-26cd-4f0e-bac7-cddd5a302b80"
+        }
+      }
+    },
+    "CentOSServerLaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "AssociatePublicIpAddress": "true",
+        "ImageId": {
+          "Ref": "AmiCode"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "CentOSSecurityGroup"
+          }
+        ],
+        "IamInstanceProfile": {
+          "Ref": "CentOSInstanceProfile"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": "150",
+              "DeleteOnTermination": "true",
+              "VolumeType": "gp2"
+            }
+          },
+          {
+            "DeviceName": "/dev/sdb",
+            "Ebs": {
+              "VolumeSize": "150",
+              "DeleteOnTermination": "true",
+              "VolumeType": "gp2",
+              "SnapshotId": {
+                "Fn::FindInMap": [
+                  "SDBSnapshot",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "snap"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "76f19e11-53ab-4639-8426-f3de8eeae389"
+        }
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "8925b521-77c7-4763-9f71-0958a11266af": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 210,
+          "y": 270
+        },
+        "z": 2,
+        "parent": "8feb1b9e-b3db-4aba-8790-257cf79bdd87",
+        "embeds": []
+      },
+      "76f19e11-53ab-4639-8426-f3de8eeae389": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 180,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "8925b521-77c7-4763-9f71-0958a11266af"
+        ],
+        "isrelatedto": [
+          "91530628-c66c-4d18-bad2-363898cc8249"
+        ]
+      },
+      "6bb4b187-26cd-4f0e-bac7-cddd5a302b80": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 210
+        },
+        "z": 1,
+        "embeds": [],
+        "isconnectedto": [
+          "c8ab05e8-eed6-4804-b8be-ba1cdd3a5b97"
+        ],
+        "isassociatedwith": [
+          "76f19e11-53ab-4639-8426-f3de8eeae389"
+        ],
+        "dependson": [
+          "daea27c9-86cc-41a8-a12d-3a534b285d71"
+        ]
+      },
+      "0586f22f-7c77-48e8-9e9e-9f7fe43467c1": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 750
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "91530628-c66c-4d18-bad2-363898cc8249": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 180,
+          "y": 750
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "0586f22f-7c77-48e8-9e9e-9f7fe43467c1"
+        ]
+      },
+      "69635053-d1e2-4b01-921f-4be2a04742e1": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 300,
+          "y": 750
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "8feb1b9e-b3db-4aba-8790-257cf79bdd87": {
+        "size": {
+          "width": 600,
+          "height": 510
+        },
+        "position": {
+          "x": 150,
+          "y": 180
+        },
+        "z": 1,
+        "embeds": [
+          "8925b521-77c7-4763-9f71-0958a11266af",
+          "8d580c64-efff-45be-882e-967ce255dcfd",
+          "c8ab05e8-eed6-4804-b8be-ba1cdd3a5b97"
+        ]
+      },
+      "8d580c64-efff-45be-882e-967ce255dcfd": {
+        "size": {
+          "width": 240,
+          "height": 240
+        },
+        "position": {
+          "x": 180,
+          "y": 240
+        },
+        "z": 2,
+        "parent": "8feb1b9e-b3db-4aba-8790-257cf79bdd87",
+        "embeds": [
+          "daea27c9-86cc-41a8-a12d-3a534b285d71"
+        ]
+      },
+      "3ac5b8f2-42b1-4595-b7b7-a287e102e9e3": {
+        "source": {
+          "id": "69635053-d1e2-4b01-921f-4be2a04742e1"
+        },
+        "target": {
+          "id": "8feb1b9e-b3db-4aba-8790-257cf79bdd87"
+        }
+      },
+      "daea27c9-86cc-41a8-a12d-3a534b285d71": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 210,
+          "y": 300
+        },
+        "z": 3,
+        "parent": "8d580c64-efff-45be-882e-967ce255dcfd",
+        "embeds": [],
+        "references": [
+          "69635053-d1e2-4b01-921f-4be2a04742e1"
+        ],
+        "dependson": [
+          "3ac5b8f2-42b1-4595-b7b7-a287e102e9e3"
+        ]
+      },
+      "c8ab05e8-eed6-4804-b8be-ba1cdd3a5b97": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": 480,
+          "y": 240
+        },
+        "z": 2,
+        "parent": "8feb1b9e-b3db-4aba-8790-257cf79bdd87",
+        "embeds": []
+      },
+      "3ba17df0-71d7-47dd-a4c6-78b127a84441": {
+        "source": {
+          "id": "8d580c64-efff-45be-882e-967ce255dcfd"
+        },
+        "target": {
+          "id": "c8ab05e8-eed6-4804-b8be-ba1cdd3a5b97"
+        }
+      }
+    }
+  }
+}
