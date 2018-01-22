@@ -1,0 +1,65 @@
+{
+  "id": "/solace",
+  "backoffFactor": 1.15,
+  "backoffSeconds": 1,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [],
+    "docker": {
+      "image": "choltfurth/solace-app",
+      "forcePullImage": false,
+      "privileged": false,
+      "parameters": [
+        {
+          "key": "uts",
+          "value": "host"
+        },
+        {
+          "key": "shm-size",
+          "value": "2g"
+        },
+        {
+          "key": "ulimit",
+          "value": "core=-1"
+        },
+        {
+          "key": "ulimit",
+          "value": "memlock=-1"
+        },
+        {
+          "key": "ulimit",
+          "value": "nofile=2448:38048"
+        }
+      ]
+    }
+  },
+  "cpus": 1,
+  "disk": 0,
+  "env": {
+    "username_admin_globalaccesslevel": "admin",
+    "username_admin_password": "admin"
+  },
+  "instances": 1,
+  "maxLaunchDelaySeconds": 3600,
+  "mem": 8192,
+  "gpus": 0,
+  "networks": [
+    {
+      "mode": "host"
+    }
+  ],
+  "requirePorts": false,
+  "upgradeStrategy": {
+    "maximumOverCapacity": 1,
+    "minimumHealthCapacity": 1
+  },
+  "killSelection": "YOUNGEST_FIRST",
+  "unreachableStrategy": {
+    "inactiveAfterSeconds": 0,
+    "expungeAfterSeconds": 0
+  },
+  "healthChecks": [],
+  "fetch": [],
+  "constraints": [],
+  "portDefinitions": []
+}
