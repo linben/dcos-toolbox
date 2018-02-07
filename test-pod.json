@@ -60,7 +60,7 @@
          ],
          "artifacts":[
             {
-               "uri":"https://raw.githubusercontent.com/linben/mesosphere/master/read-write-server.py",
+               "uri":"https://raw.githubusercontent.com/linben/dcos-toolbox/master/read-write-server.py",
                "extract":false,
                "executable":true,
                "cache":true,
@@ -124,7 +124,7 @@
          ],
          "artifacts":[
             {
-               "uri":"https://raw.githubusercontent.com/linben/mesosphere/master/read-write-server.py",
+               "uri":"https://raw.githubusercontent.com/linben/dcos-toolbox/master/read-write-server.py",
                "extract":false,
                "executable":true,
                "cache":true,
