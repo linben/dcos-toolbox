@@ -288,7 +288,7 @@
             "bootstrap_zip": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/bootstrap.zip",
             "kubelet_resource_watchdog": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kubelet-resource-watchdog-v0.2.0.tar.gz",
             "conntrack": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/conntrack-1.4.4.tar.gz",
-            "etcd_uri": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/etcd-v3.3.2-linux-amd64.tar.gz",
+            "etcd_uri": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/etcd-v3.3.1-linux-amd64.tar.gz",
             "apiserver_uri": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-apiserver",
             "controller_manager_uri": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-controller-manager",
             "scheduler_uri": "http://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-scheduler",
