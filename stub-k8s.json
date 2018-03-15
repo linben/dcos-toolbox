@@ -1,0 +1,353 @@
+{
+  "packages": [
+    {
+      "packagingVersion": "4.0",
+      "minDcosReleaseVersion": "1.11",
+      "upgradesFrom": [
+        "*"
+      ],
+      "name": "kubernetes",
+      "version": "stub-universe",
+      "maintainer": "support@mesosphere.com",
+      "description": "Kubernetes",
+      "selected": true,
+      "framework": true,
+      "tags": [
+        "kubernetes"
+      ],
+      "preInstallNotes": "Kubernetes on DC/OS.\n\n\tDocumentation: https://docs.mesosphere.com/service-docs/kubernetes\n\tIssues: https://github.com/mesosphere/dcos-kubernetes-quickstart/issues",
+      "postInstallNotes": "DC/OS Kubernetes is being installed!",
+      "postUninstallNotes": "DC/OS Kubernetes has been uninstalled.",
+      "releaseVersion": 0,
+      "config": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "object",
+            "description": "DC/OS service configuration properties",
+            "properties": {
+              "name": {
+                "title": "Service name",
+                "description": "The name of the service instance. The name must contain only alphanumeric characters, underscores and dashes up to a maximum of 24 characters, and must start and end with an alphanumeric character).",
+                "type": "string",
+                "default": "kubernetes",
+                "pattern": "^[a-zA-Z0-9]([\\w-]{0,22}[a-zA-Z0-9])?$"
+              },
+              "sleep": {
+                "description": "The sleep duration in seconds before tasks exit.",
+                "type": "number",
+                "default": 1000
+              },
+              "service_account": {
+                "description": "The service account for DC/OS service authentication. This is typically left empty to use the default unless service authentication is needed. The value given here is passed as the principal of the Mesos framework.",
+                "type": "string",
+                "default": ""
+              },
+              "service_account_secret": {
+                "title": "Credential secret name (optional)",
+                "description": "Name of the Secret Store credentials to use for DC/OS service authentication. This should be left empty unless service authentication is needed.",
+                "type": "string",
+                "default": ""
+              },
+              "log_level": {
+                "description": "The log level for the DC/OS service.",
+                "type": "string",
+                "enum": [
+                  "OFF",
+                  "FATAL",
+                  "ERROR",
+                  "WARN",
+                  "INFO",
+                  "DEBUG",
+                  "TRACE",
+                  "ALL"
+                ],
+                "default": "INFO"
+              }
+            }
+          },
+          "kubernetes": {
+            "description": "Kubernetes general properties",
+            "type": "object",
+            "properties": {
+              "high_availability": {
+                "type": "boolean",
+                "default": false,
+                "title": "High-availability",
+                "description": "Whether to deploy a highly-available control plane."
+              },
+              "service_cidr": {
+                "title": "Service CIDR",
+                "description": "Kubernetes Service CIDR block, e.g. '10.100.0.0/16'. It MUST NOT overlap with DC/OS VIP CIDR block.",
+                "type": "string",
+                "default": "10.100.0.0/16",
+                "pattern": "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(\\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])){3}/([12]?[0-9]|3[0-2])$"
+              },
+              "network_provider": {
+                "title": "Network Provider",
+                "description": "Underlying DC/OS network to use for Kubernetes workloads.",
+                "type": "string",
+                "default": "dcos"
+              },
+              "node_count": {
+                "title": "Private Node Count",
+                "description": "Number of desired private Kubernetes nodes.",
+                "type": "integer",
+                "default": 1,
+                "minimum": 1
+              },
+              "cloud_provider": {
+                "title": "The provider for cloud services.",
+                "description": "The provider for cloud services.",
+                "type": "string",
+                "enum": [
+                  "(none)",
+                  "aws"
+                ],
+                "default": "(none)"
+              },
+              "public_node_count": {
+                "title": "Public Node Count",
+                "description": "Number of desired public Kubernetes nodes.",
+                "type": "integer",
+                "default": 0
+              },
+              "reserved_resources": {
+                "type": "object",
+                "description": "Reserved resources for Kubernetes nodes",
+                "properties": {
+                  "kube_cpus": {
+                    "title": "Node CPU available for pods",
+                    "description": "Amount of CPU resources available for pods.",
+                    "type": "number",
+                    "default": 2
+                  },
+                  "kube_mem": {
+                    "title": "Node RAM memory available for pods (in MB)",
+                    "description": "Amount of memory RAM resources available for pods (in MB).",
+                    "type": "integer",
+                    "default": 2048
+                  },
+                  "kube_disk": {
+                    "title": "Node Disk size (MB)",
+                    "description": "Amount of persistent disk available for pods (in MB)",
+                    "type": "integer",
+                    "default": 10240
+                  },
+                  "system_cpus": {
+                    "title": "Kube-reserved CPU count",
+                    "description": "CPU reserved for kubelet and container runtime daemons.",
+                    "type": "number",
+                    "default": 1,
+                    "minimum": 1
+                  },
+                  "system_mem": {
+                    "title": "Kube-reserved RAM memory (in MB)",
+                    "description": "RAM memory reserved for kubelet and container runtime daemons (in MB).",
+                    "type": "integer",
+                    "default": 1024,
+                    "minimum": 1024
+                  }
+                }
+              }
+            }
+          },
+          "etcd": {
+            "description": "etcd properties",
+            "type": "object",
+            "properties": {
+              "cpus": {
+                "title": "CPU count",
+                "description": "etcd node CPU requirements.",
+                "type": "number",
+                "default": 0.5
+              },
+              "mem": {
+                "title": "Memory size (MB)",
+                "description": "etcd node RAM requirements (in MB).",
+                "type": "integer",
+                "default": 1024
+              },
+              "data_disk": {
+                "title": "Disk size (MB) for data",
+                "description": "etcd node persistent disk requirements (in MB) for the data",
+                "type": "integer",
+                "default": 3072
+              },
+              "wal_disk": {
+                "title": "Disk size (MB) for logs",
+                "description": "etcd node persistent disk requirements (in MB) for the logs",
+                "type": "integer",
+                "default": 512
+              },
+              "disk_type": {
+                "title": "Disk type [ROOT, MOUNT]",
+                "description": "Mount volumes require pre-configuration in DC/OS.",
+                "enum": [
+                  "ROOT",
+                  "MOUNT"
+                ],
+                "default": "ROOT"
+              }
+            }
+          },
+          "scheduler": {
+            "description": "Kubernetes Scheduler properties",
+            "type": "object",
+            "properties": {
+              "cpus": {
+                "title": "CPU count",
+                "description": "Scheduler instance CPU requirements.",
+                "type": "number",
+                "default": 0.5
+              },
+              "mem": {
+                "title": "Memory size (MB)",
+                "description": "Scheduler instance RAM requirements (in MB).",
+                "type": "integer",
+                "default": 512
+              }
+            }
+          },
+          "controller_manager": {
+            "description": "Kubernetes Controller Manager properties",
+            "type": "object",
+            "properties": {
+              "cpus": {
+                "title": "CPU count",
+                "description": "Controller Manager instance CPU requirements.",
+                "type": "number",
+                "default": 0.5
+              },
+              "mem": {
+                "title": "Memory size (MB)",
+                "description": "Controller Manager instance RAM requirements (in MB).",
+                "type": "integer",
+                "default": 512
+              }
+            }
+          },
+          "apiserver": {
+            "description": "Kubernetes API Server properties",
+            "type": "object",
+            "properties": {
+              "cpus": {
+                "title": "CPU count",
+                "description": "API Server instance CPU requirements.",
+                "type": "number",
+                "default": 0.5
+              },
+              "mem": {
+                "title": "Memory size (MB)",
+                "description": "API Server instance RAM requirements (in MB).",
+                "type": "integer",
+                "default": 1024
+              }
+            }
+          },
+          "kube_proxy": {
+            "description": "Kubernetes kube-proxy properties",
+            "type": "object",
+            "properties": {
+              "cpus": {
+                "title": "CPU count",
+                "description": "kube-proxy instance CPU requirements.",
+                "type": "number",
+                "default": 0.1
+              },
+              "mem": {
+                "title": "Memory size (MB)",
+                "description": "kube-proxy instance RAM requirements (in MB).",
+                "type": "integer",
+                "default": 512
+              }
+            }
+          }
+        }
+      },
+      "marathon": {
+        "v2AppMustacheTemplate": "ewogICJpZCI6ICJ7e3NlcnZpY2UubmFtZX19IiwKICAiY3B1cyI6IDEuMCwKICAibWVtIjogMTAyNCwKICAiaW5zdGFuY2VzIjogMSwKICAiY21kIjogImV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9JE1FU09TX1NBTkRCT1gvbGlibWVzb3MtYnVuZGxlL2xpYjokTERfTElCUkFSWV9QQVRIOyBleHBvcnQgTUVTT1NfTkFUSVZFX0pBVkFfTElCUkFSWT0kKGxzICRNRVNPU19TQU5EQk9YL2xpYm1lc29zLWJ1bmRsZS9saWIvbGlibWVzb3MtKi5zbyk7IGV4cG9ydCBKQVZBX0hPTUU9JChscyAtZCAkTUVTT1NfU0FOREJPWC9qcmUqLyk7IGV4cG9ydCBKQVZBX0hPTUU9JHtKQVZBX0hPTUUlL307IGV4cG9ydCBQQVRIPSQobHMgLWQgJEpBVkFfSE9NRS9iaW4pOiRQQVRIICYmICBleHBvcnQgSkFWQV9PUFRTPVwiLVhtczI1Nk0gLVhteDUxMk0gLVhYOi1IZWFwRHVtcE9uT3V0T2ZNZW1vcnlFcnJvclwiICYmIC4vYm9vdHN0cmFwIC1yZXNvbHZlPWZhbHNlIC10ZW1wbGF0ZT1mYWxzZSAmJiAuL2t1YmVybmV0ZXMtc2NoZWR1bGVyL2Jpbi9rdWJlcm5ldGVzIC4va3ViZXJuZXRlcy1zY2hlZHVsZXIvc3ZjLnltbCIsCiAgImxhYmVscyI6IHsKICAgICJEQ09TX0NPTU1PTlNfQVBJX1ZFUlNJT04iOiAidjEiLAogICAgIkRDT1NfQ09NTU9OU19VTklOU1RBTEwiOiAidHJ1ZSIsCiAgICAiRENPU19QQUNLQUdFX0ZSQU1FV09SS19OQU1FIjogInt7c2VydmljZS5uYW1lfX0iLAogICAgIk1BUkFUSE9OX1NJTkdMRV9JTlNUQU5DRV9BUFAiOiAidHJ1ZSIsCiAgICAiRENPU19TRVJWSUNFX05BTUUiOiAie3tzZXJ2aWNlLm5hbWV9fSIsCiAgICAiRENPU19TRVJWSUNFX1BPUlRfSU5ERVgiOiAiMCIsCiAgICAiRENPU19TRVJWSUNFX1NDSEVNRSI6ICJodHRwIgogIH0sCiAge3sjc2VydmljZS5zZXJ2aWNlX2FjY291bnRfc2VjcmV0fX0KICAic2VjcmV0cyI6IHsKICAgICJzZXJ2aWNlQ3JlZGVudGlhbCI6IHsKICAgICAgInNvdXJjZSI6ICJ7e3NlcnZpY2Uuc2VydmljZV9hY2NvdW50X3NlY3JldH19IgogICAgfQogIH0sCiAge3svc2VydmljZS5zZXJ2aWNlX2FjY291bnRfc2VjcmV0fX0KICAiZW52IjogewogICAgIlBBQ0tBR0VfTkFNRSI6ICJrdWJlcm5ldGVzIiwKICAgICJQQUNLQUdFX1ZFUlNJT04iOiAic3R1Yi11bml2ZXJzZSIsCiAgICAiUEFDS0FHRV9CVUlMRF9USU1FX0VQT0NIX01TIjogIjE1MjEwNTY1NDk3ODAiLAogICAgIlBBQ0tBR0VfQlVJTERfVElNRV9TVFIiOiAiV2VkIE1hciAxNCAyMDE4IDE5OjQyOjI5ICswMDAwIiwKICAgICJNRVNPU19BUElfVkVSU0lPTiI6ICJWMSIsCgogICAgIkZSQU1FV09SS19OQU1FIjogInt7c2VydmljZS5uYW1lfX0iLAogICAgIkZSQU1FV09SS19MT0dfTEVWRUwiOiAie3tzZXJ2aWNlLmxvZ19sZXZlbH19IiwKICAgICJTRVJWSUNFX1BSSU5DSVBBTCI6ICJ7e3NlcnZpY2Uuc2VydmljZV9hY2NvdW50fX0iLAoKICAgICJFVENEX1VSSSI6ICJ7e3Jlc291cmNlLmFzc2V0cy51cmlzLmV0Y2RfdXJpfX0iLAogICAgIkVUQ0RfVkVSU0lPTiI6ICJ2My4zLjIiLAogICAgIkVUQ0RfUVVPVEFfQkFDS0VORF9CWVRFUyI6ICIzMjIxMjI1NDcyIiwKICAgICJFVENEX0VMRUNUSU9OX1RJTUVPVVQiOiAiNTAwMCIsCiAgICAiRVRDRF9IRUFSVEJFQVRfSU5URVJWQUwiOiAiMjUwIiwKICAgIHt7I2t1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAgIkVUQ0RfQ09VTlQiOiAiMyIsCiAgICB7ey9rdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgIHt7Xmt1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAgIkVUQ0RfQ09VTlQiOiAiMSIsCiAgICB7ey9rdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgICJFVENEX1BMQUNFTUVOVCI6ICJob3N0bmFtZTpVTklRVUUiLAogICAgIkVUQ0RfQ1BVUyI6ICJ7e2V0Y2QuY3B1c319IiwKICAgICJFVENEX01FTSI6ICJ7e2V0Y2QubWVtfX0iLAogICAgIkVUQ0RfREFUQV9ESVNLIjogInt7ZXRjZC5kYXRhX2Rpc2t9fSIsCiAgICAiRVRDRF9XQUxfRElTSyI6ICJ7e2V0Y2Qud2FsX2Rpc2t9fSIsCiAgICAiRVRDRF9ESVNLX1RZUEUiOiAie3tldGNkLmRpc2tfdHlwZX19IiwKCiAgICAiS1VCRVJORVRFU19TRVJWSUNFX0NJRFIiOiAie3trdWJlcm5ldGVzLnNlcnZpY2VfY2lkcn19IiwKICAgICJLVUJFUk5FVEVTX05FVFdPUktfUFJPVklERVIiOiAie3trdWJlcm5ldGVzLm5ldHdvcmtfcHJvdmlkZXJ9fSIsCiAgICAiS1VCRVJORVRFU19OT0RFX0NPVU5UIjogInt7a3ViZXJuZXRlcy5ub2RlX2NvdW50fX0iLAogICAgIktVQkVSTkVURVNfQ0xPVURfUFJPVklERVIiOiAie3trdWJlcm5ldGVzLmNsb3VkX3Byb3ZpZGVyfX0iLAogICAgIktVQkVSTkVURVNfUFVCTElDX05PREVfQ09VTlQiOiAie3trdWJlcm5ldGVzLnB1YmxpY19ub2RlX2NvdW50fX0iLAogICAgIktVQkVfQUxMT0NBVEFCTEVfQ1BVUyI6ICJ7e2t1YmVybmV0ZXMucmVzZXJ2ZWRfcmVzb3VyY2VzLmt1YmVfY3B1c319IiwKICAgICJLVUJFX0FMTE9DQVRBQkxFX01FTSI6ICJ7e2t1YmVybmV0ZXMucmVzZXJ2ZWRfcmVzb3VyY2VzLmt1YmVfbWVtfX0iLAogICAgIktVQkVSTkVURVNfTk9ERV9ESVNLIjogInt7a3ViZXJuZXRlcy5yZXNlcnZlZF9yZXNvdXJjZXMua3ViZV9kaXNrfX0iLAogICAgIktVQkVfUkVTRVJWRURfQ1BVUyI6ICJ7e2t1YmVybmV0ZXMucmVzZXJ2ZWRfcmVzb3VyY2VzLnN5c3RlbV9jcHVzfX0iLAogICAgIktVQkVfUkVTRVJWRURfTUVNIjogInt7a3ViZXJuZXRlcy5yZXNlcnZlZF9yZXNvdXJjZXMuc3lzdGVtX21lbX19IiwKICAgICJLVUJFUk5FVEVTX05PREVfUExBQ0VNRU5UIjogImhvc3RuYW1lOlVOSVFVRSIsCiAgICAiS1VCRVJORVRFU19DTFVTVEVSX0ROUyI6ICIxOTguNTEuMTAwLjQiLAogICAgIktVQkVSTkVURVNfQ0xVU1RFUl9ET01BSU4iOiAiY2x1c3Rlci5sb2NhbCIsCiAgICAiS1VCRUxFVF9NQVhfUE9EUyI6ICIxMDAiLAogICAgIktVQkVMRVRfUE9EU19QRVJfQ09SRSI6ICIxMCIsCgogICAgIkFQSVNFUlZFUl9VUkkiOiAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5hcGlzZXJ2ZXJfdXJpfX0iLAogICAge3sja3ViZXJuZXRlcy5oaWdoX2F2YWlsYWJpbGl0eX19CiAgICAiQVBJU0VSVkVSX0NPVU5UIjogIjMiLAogICAge3sva3ViZXJuZXRlcy5oaWdoX2F2YWlsYWJpbGl0eX19CiAgICB7e15rdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgICJBUElTRVJWRVJfQ09VTlQiOiAiMSIsCiAgICB7ey9rdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgICJBUElTRVJWRVJfUExBQ0VNRU5UIjogImhvc3RuYW1lOlVOSVFVRSIsCiAgICAiQVBJU0VSVkVSX0NQVVMiOiAie3thcGlzZXJ2ZXIuY3B1c319IiwKICAgICJBUElTRVJWRVJfTUVNIjogInt7YXBpc2VydmVyLm1lbX19IiwKICAgICJBUElTRVJWRVJfTUFYX1JFUVVFU1RTX0lORkxJR0hUIjogIjEyMDAiLAogICAgIkFQSVNFUlZFUl9NQVhfTVVUQVRJTkdfUkVRVUVTVFNfSU5GTElHSFQiOiAiNDAwIiwKCiAgICAiQ09OVFJPTExFUl9NQU5BR0VSX1VSSSI6ICJ7e3Jlc291cmNlLmFzc2V0cy51cmlzLmNvbnRyb2xsZXJfbWFuYWdlcl91cml9fSIsCiAgICB7eyNrdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgICJDT05UUk9MTEVSX01BTkFHRVJfQ09VTlQiOiAiMyIsCiAgICB7ey9rdWJlcm5ldGVzLmhpZ2hfYXZhaWxhYmlsaXR5fX0KICAgIHt7Xmt1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAgIkNPTlRST0xMRVJfTUFOQUdFUl9DT1VOVCI6ICIxIiwKICAgIHt7L2t1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAgIkNPTlRST0xMRVJfTUFOQUdFUl9QTEFDRU1FTlQiOiAiaG9zdG5hbWU6VU5JUVVFIiwKICAgICJDT05UUk9MTEVSX01BTkFHRVJfQ1BVUyI6ICJ7e2NvbnRyb2xsZXJfbWFuYWdlci5jcHVzfX0iLAogICAgIkNPTlRST0xMRVJfTUFOQUdFUl9NRU0iOiAie3tjb250cm9sbGVyX21hbmFnZXIubWVtfX0iLAoKICAgICJTQ0hFRFVMRVJfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMuc2NoZWR1bGVyX3VyaX19IiwKICAgIHt7I2t1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAgIlNDSEVEVUxFUl9DT1VOVCI6ICIzIiwKICAgIHt7L2t1YmVybmV0ZXMuaGlnaF9hdmFpbGFiaWxpdHl9fQogICAge3tea3ViZXJuZXRlcy5oaWdoX2F2YWlsYWJpbGl0eX19CiAgICAiU0NIRURVTEVSX0NPVU5UIjogIjEiLAogICAge3sva3ViZXJuZXRlcy5oaWdoX2F2YWlsYWJpbGl0eX19CiAgICAiU0NIRURVTEVSX1BMQUNFTUVOVCI6ICJob3N0bmFtZTpVTklRVUUiLAogICAgIlNDSEVEVUxFUl9DUFVTIjogInt7c2NoZWR1bGVyLmNwdXN9fSIsCiAgICAiU0NIRURVTEVSX01FTSI6ICJ7e3NjaGVkdWxlci5tZW19fSIsCgogICAgIktVQkVfUFJPWFlfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMua3ViZV9wcm94eV91cml9fSIsCiAgICAiS1VCRV9QUk9YWV9DUFVTIjogInt7a3ViZV9wcm94eS5jcHVzfX0iLAogICAgIktVQkVfUFJPWFlfTUVNIjogInt7a3ViZV9wcm94eS5tZW19fSIsCgogICAgIkNPUkVETlNfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMuY29yZWRuc191cml9fSIsCgogICAgIktVQkVMRVRfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMua3ViZWxldF91cml9fSIsCgogICAgIktVQkVDVExfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMua3ViZWN0bF91cml9fSIsCgogICAgIkRPQ0tFUl9VUkkiOiAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5kb2NrZXJfdXJpfX0iLAogICAgIlNPQ0FUX1VSSSI6ICJ7e3Jlc291cmNlLmFzc2V0cy51cmlzLnNvY2F0X3VyaX19IiwKCiAgICAiSkFWQV9VUkkiOiAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5qcmVfdGFyX2d6fX0iLAogICAgIkVYRUNVVE9SX1VSSSI6ICJ7e3Jlc291cmNlLmFzc2V0cy51cmlzLmV4ZWN1dG9yX3ppcH19IiwKICAgICJCT09UU1RSQVBfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMuYm9vdHN0cmFwX3ppcH19IiwKCiAgICAiS1VCRUxFVF9SRVNPVVJDRV9XQVRDSERPR19VUkkiOiAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5rdWJlbGV0X3Jlc291cmNlX3dhdGNoZG9nfX0iLAogICAgIkNPTk5UUkFDS19VUkkiOiAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5jb25udHJhY2t9fSIsCgogICAgIktVQkVETlNfRE9DS0VSX0lNQUdFIjogInt7cmVzb3VyY2UuYXNzZXRzLmNvbnRhaW5lci5kb2NrZXIua3ViZWRuc319IiwKICAgICJLVUJFRE5TX0ROU01BU1FfRE9DS0VSX0lNQUdFIjogInt7cmVzb3VyY2UuYXNzZXRzLmNvbnRhaW5lci5kb2NrZXIua3ViZWRuc19kbnNtYXNxfX0iLAogICAgIktVQkVETlNfU0lERUNBUl9ET0NLRVJfSU1BR0UiOiAie3tyZXNvdXJjZS5hc3NldHMuY29udGFpbmVyLmRvY2tlci5rdWJlZG5zX3NpZGVjYXJ9fSIsCgogICAgIk1FVFJJQ1NfU0VSVkVSX0RPQ0tFUl9JTUFHRSI6ICJ7e3Jlc291cmNlLmFzc2V0cy5jb250YWluZXIuZG9ja2VyLm1ldHJpY3Nfc2VydmVyfX0iLAoKICAgICJEQVNIQk9BUkRfRE9DS0VSX0lNQUdFIjogInt7cmVzb3VyY2UuYXNzZXRzLmNvbnRhaW5lci5kb2NrZXIuZGFzaGJvYXJkfX0iLAoKICAgICJQQVVTRV9ET0NLRVJfSU1BR0UiOiAie3tyZXNvdXJjZS5hc3NldHMuY29udGFpbmVyLmRvY2tlci5wYXVzZX19IiwKCiAgICAiTUFSQVRIT05fVVJMIjogImh0dHA6Ly9tYXJhdGhvbi5tZXNvczo4MDgwIiwKICAgICJTVEFUSUNfU09DQVRfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMuc3RhdGljX3NvY2F0X3VyaX19IiwKCiAgICB7eyNzZXJ2aWNlLnNlcnZpY2VfYWNjb3VudF9zZWNyZXR9fQogICAgIkRDT1NfU0VSVklDRV9BQ0NPVU5UX0NSRURFTlRJQUwiOiB7ICJzZWNyZXQiOiAic2VydmljZUNyZWRlbnRpYWwiIH0sCiAgICAiTUVTT1NfTU9EVUxFUyI6ICJ7XCJsaWJyYXJpZXNcIjpbe1wiZmlsZVwiOlwibGlibWVzb3MtYnVuZGxlXC9saWJcL21lc29zXC9saWJkY29zX3NlY3VyaXR5LnNvXCIsXCJtb2R1bGVzXCI6W3tcIm5hbWVcIjogXCJjb21fbWVzb3NwaGVyZV9kY29zX0NsYXNzaWNSUENBdXRoZW50aWNhdGVlXCJ9LHtcIm5hbWVcIjpcImNvbV9tZXNvc3BoZXJlX2Rjb3NfaHR0cF9BdXRoZW50aWNhdGVlXCIsXCJwYXJhbWV0ZXJzXCI6W3tcImtleVwiOlwiand0X2V4cF90aW1lb3V0XCIsXCJ2YWx1ZVwiOlwiNW1pbnNcIn0se1wia2V5XCI6XCJwcmVlbXB0aXZlX3JlZnJlc2hfZHVyYXRpb25cIixcInZhbHVlXCI6XCIzMG1pbnNcIn1dfV19XX0iLAogICAgIk1FU09TX0FVVEhFTlRJQ0FURUUiOiAiY29tX21lc29zcGhlcmVfZGNvc19DbGFzc2ljUlBDQXV0aGVudGljYXRlZSIsCiAgICAiTUVTT1NfSFRUUF9BVVRIRU5USUNBVEVFIjogImNvbV9tZXNvc3BoZXJlX2Rjb3NfaHR0cF9BdXRoZW50aWNhdGVlIiwKICAgIHt7L3NlcnZpY2Uuc2VydmljZV9hY2NvdW50X3NlY3JldH19CiAgICAiTElCTUVTT1NfVVJJIjogInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMubGlibWVzb3NfYnVuZGxlX3Rhcl9nen19IgogIH0sCiAgInVyaXMiOiBbCiAgICAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5qcmVfdGFyX2d6fX0iLAogICAgInt7cmVzb3VyY2UuYXNzZXRzLnVyaXMuc2NoZWR1bGVyX3ppcH19IiwKICAgICJ7e3Jlc291cmNlLmFzc2V0cy51cmlzLmxpYm1lc29zX2J1bmRsZV90YXJfZ3p9fSIsCiAgICAie3tyZXNvdXJjZS5hc3NldHMudXJpcy5ib290c3RyYXBfemlwfX0iCiAgXSwKICAidXBncmFkZVN0cmF0ZWd5Ijp7CiAgICAibWluaW11bUhlYWx0aENhcGFjaXR5IjogMCwKICAgICJtYXhpbXVtT3ZlckNhcGFjaXR5IjogMAogIH0sCiAgImhlYWx0aENoZWNrcyI6IFsKICAgIHsKICAgICAgInByb3RvY29sIjogIkhUVFAiLAogICAgICAicGF0aCI6ICIvdjEvcGxhbnMvZGVwbG95IiwKICAgICAgImdyYWNlUGVyaW9kU2Vjb25kcyI6IDkwMCwKICAgICAgImludGVydmFsU2Vjb25kcyI6IDMwLAogICAgICAicG9ydEluZGV4IjogMCwKICAgICAgInRpbWVvdXRTZWNvbmRzIjogMzAsCiAgICAgICJtYXhDb25zZWN1dGl2ZUZhaWx1cmVzIjogMAogICAgfSwKICAgIHsKICAgICAgInByb3RvY29sIjogIkhUVFAiLAogICAgICAicGF0aCI6ICIvdjEvcGxhbnMvcmVjb3ZlcnkiLAogICAgICAiZ3JhY2VQZXJpb2RTZWNvbmRzIjogOTAwLAogICAgICAiaW50ZXJ2YWxTZWNvbmRzIjogMzAsCiAgICAgICJwb3J0SW5kZXgiOiAwLAogICAgICAidGltZW91dFNlY29uZHMiOiAzMCwKICAgICAgIm1heENvbnNlY3V0aXZlRmFpbHVyZXMiOiAwCiAgICB9CiAgXSwKICAicG9ydERlZmluaXRpb25zIjogWwogICAgewogICAgICAicG9ydCI6IDAsCiAgICAgICJwcm90b2NvbCI6ICJ0Y3AiLAogICAgICAibmFtZSI6ICJhcGkiLAogICAgICAibGFiZWxzIjogeyAiVklQXzAiOiAiL2FwaS57e3NlcnZpY2UubmFtZX19OjgwIiB9CiAgICB9CiAgXQp9Cg=="
+      },
+      "resource": {
+        "assets": {
+          "container": {
+            "docker": {
+              "kubedns": "master.mesos:5000/google_containers/k8s-dns-kube-dns-amd64:1.14.8",
+              "kubedns_dnsmasq": "master.mesos:5000/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.8",
+              "kubedns_sidecar": "master.mesos:5000/google_containers/k8s-dns-sidecar-amd64:1.14.8",
+              "metrics_server": "master.mesos:5000/google_containers/metrics-server-amd64:v0.2.1",
+              "dashboard": "master.mesos:5000/google_containers/kubernetes-dashboard-amd64:v1.6.3",
+              "pause": "master.mesos:5000/google_containers/pause-amd64:3.0"
+            }
+          },
+          "uris": {
+            "jre_tar_gz": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/jre-8u152-linux-x64.tar.gz",
+            "libmesos_bundle_tar_gz": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/libmesos-bundle-master-28f8827.tar.gz",
+            "scheduler_zip": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kubernetes-scheduler.zip",
+            "executor_zip": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/executor.zip",
+            "bootstrap_zip": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/bootstrap.zip",
+            "kubelet_resource_watchdog": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kubelet-resource-watchdog-v0.2.0.tar.gz",
+            "conntrack": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/conntrack-1.4.4.tar.gz",
+            "etcd_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/etcd-v3.3.2-linux-amd64.tar.gz",
+            "apiserver_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-apiserver",
+            "controller_manager_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-controller-manager",
+            "scheduler_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-scheduler",
+            "kube_proxy_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kube-proxy",
+            "kubelet_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kubelet",
+            "docker_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/docker-18.02.0-ce.tgz",
+            "socat_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/socat.d-1.7.3.2-2.fc26.tar.gz",
+            "kubectl_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/kubectl",
+            "ark_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/ark-v0.6.0-linux-amd64.tar.gz",
+            "static_socat_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/socat-1.7.3.2.tar.gz",
+            "coredns_uri": "https://master.mesos:8082/kubernetes/1.0.0-1.9.3/uris/coredns_1.0.5_linux_amd64.tgz"
+          }
+        },
+        "images": {
+          "icon-small": "https://downloads.mesosphere.com/kubernetes/assets/k8s-small-48x48.png",
+          "icon-medium": "https://downloads.mesosphere.com/kubernetes/assets/k8s-medium-96x96.png",
+          "icon-large": "https://downloads.mesosphere.com/kubernetes/assets/k8s-large-256x256.png"
+        },
+        "cli": {
+          "binaries": {
+            "darwin": {
+              "x86-64": {
+                "contentHash": [
+                  {
+                    "algo": "sha256",
+                    "value": "b6df233e3b6cde16e8e4c8941549ec44523975187cda9b6df343594684b4e72c"
+                  }
+                ],
+                "kind": "executable",
+                "url": "https://infinity-artifacts.s3.amazonaws.com/autodelete7d/kubernetes/20180314-194223-iDOAcc3GivtE7v4O/dcos-service-cli-darwin"
+              }
+            },
+            "linux": {
+              "x86-64": {
+                "contentHash": [
+                  {
+                    "algo": "sha256",
+                    "value": "25335bbc584fb83d5d03058be08d5b76b17d0f596a81d2c6836be44a35f1fd82"
+                  }
+                ],
+                "kind": "executable",
+                "url": "https://infinity-artifacts.s3.amazonaws.com/autodelete7d/kubernetes/20180314-194223-iDOAcc3GivtE7v4O/dcos-service-cli-linux"
+              }
+            },
+            "windows": {
+              "x86-64": {
+                "contentHash": [
+                  {
+                    "algo": "sha256",
+                    "value": "1ecf942a4043af9e32c9da9771d126401db4641bd9f18775a810fa6d6e2cd9ca"
+                  }
+                ],
+                "kind": "executable",
+                "url": "https://infinity-artifacts.s3.amazonaws.com/autodelete7d/kubernetes/20180314-194223-iDOAcc3GivtE7v4O/dcos-service-cli.exe"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
