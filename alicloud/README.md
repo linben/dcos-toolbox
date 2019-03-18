@@ -10,7 +10,7 @@ Use bootstrap node to create and upload DC/OS files
 
 1. Login to bootstrap node
 2. Create install bundle using the appropriate `config.yaml`
-3. Copy files to Aliyun Object Storage
+3. Copy files to Aliyun Object Storage Service
 4. Update ROS to use new bootstrap location
 
 **Installing Aliyun OSS Command**  
@@ -24,5 +24,6 @@ CLI tool to simplify uploading of files
 
 **Notes**
 - The region you are deploying into must support the instance types specified
-- This template has been tested in China (Beijing)
+- ROS template has been tested in China (Beijing)
+- ROS template using an OS image with DC/OS prereqs preinstalled: https://marketplace.alibabacloud.com/products/56730001/DC_OS_Centos_7_3_powered_by_Mesosphere-cmjj020082.html?spm=5176.2020520133.101.2.49081a461725c4
 
