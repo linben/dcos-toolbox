@@ -22,6 +22,13 @@ CLI tool to simplify uploading of files
 4. `sudo mv osscmd /usr/local/bin`
 5. `sudo cp -R oss /usr/lib/python2.7/site-packages`
 
+**Creating DC/OS cluster**  
+
+1. Go to ROS section
+2. Click on __New Resource Stack__
+3. Copy and Paste ROS template into dialogue box and click __Next__
+4. Enter in __Stack Name__, customize options, then click __Create__
+
 **Notes**
 - The region you are deploying into must support the instance types specified
 - ROS template has been tested in China (Beijing)
