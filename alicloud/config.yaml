@@ -1,0 +1,9 @@
+bootstrap_url: http://blin-dcos.oss-cn-shanghai.aliyuncs.com/1.12
+cluster_name: alicloud-dcos
+exhibitor_storage_backend: static
+master_discovery: static
+master_list:
+- 10.0.4.1
+resolvers:
+- 100.100.2.136
+- 100.100.2.138
