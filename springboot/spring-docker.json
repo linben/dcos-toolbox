@@ -2,14 +2,14 @@
   "labels": {
     "HAPROXY_GROUP": "external"
   },
-  "id": "/spring-docker",
+  "id": "/java-apps/spring-docker",
   "container": {
     "portMappings": [
       {
         "containerPort": 8080,
         "hostPort": 0,
         "protocol": "tcp",
-        "servicePort": 10010
+        "servicePort": 10009
       }
     ],
     "type": "DOCKER",

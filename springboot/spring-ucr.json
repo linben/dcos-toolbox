@@ -2,7 +2,7 @@
   "labels": {
     "HAPROXY_GROUP": "external"
   },
-  "id": "/spring-ucr",
+  "id": "/java-apps/spring-ucr",
   "cmd": "cd $MESOS_SANDBOX && $MESOS_SANDBOX/jdk1.8.0_181/bin/java -Dserver.port=$PORT0 -jar springboot-jsp-helloworld-1.0-SNAPSHOT.war",
   "container": {
     "type": "MESOS"
