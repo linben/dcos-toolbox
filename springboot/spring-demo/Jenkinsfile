@@ -1,0 +1,39 @@
+    def gitCommit() {
+        sh "git rev-parse HEAD > GIT_COMMIT"
+        def gitCommit = readFile('GIT_COMMIT').trim()
+        sh "rm -f GIT_COMMIT"
+        return gitCommit
+    }
+
+    node {
+        // Checkout source code from Git
+        stage 'Checkout'
+        checkout scm
+        
+        // Run maven package
+        sh "apache-maven-3.6.1/bin/mvn package"
+
+        // Build Docker image
+        stage 'Build'
+        sh "docker build -t master.mesos:5000/spring-demo:${gitCommit()} ."
+
+        // Log in and push image to GitLab
+        stage 'Publish'
+
+        sh "mkdir -p /etc/docker/certs.d/master.mesos:5000"
+        sh "wget http://master.mesos:8082/certs/domain.crt -O /etc/docker/certs.d/master.mesos:5000/ca.crt"
+        sh "docker push master.mesos:5000/spring-demo:${gitCommit()}"
+        
+
+
+        // Deploy
+        stage 'Deploy'
+
+        marathon(
+            url: 'http://marathon.mesos:8080',
+            forceUpdate: false,
+            filename: 'marathon.json',
+            id: 'spring-demo',
+            docker: "master.mesos:5000/spring-demo:${gitCommit()}".toString()
+        )
+    }

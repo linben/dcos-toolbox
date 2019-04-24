@@ -1,0 +1,34 @@
+{
+  "labels": {
+    "HAPROXY_GROUP": "external"
+  },
+  "id": "/spring-demo",
+  "container": {
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 0,
+        "protocol": "tcp",
+        "servicePort": 10010
+      }
+    ],
+    "type": "DOCKER",
+    "docker": {
+      "image": "master.mesos:5000/spring-demo:latest",
+      "forcePullImage": false,
+      "privileged": false,
+      "parameters": []
+    }
+  },
+  "cpus": 1,
+  "disk": 0,
+  "instances": 1,
+  "maxLaunchDelaySeconds": 3600,
+  "mem": 512,
+  "networks": [
+    {
+      "mode": "container/bridge"
+    }
+  ]
+}
+
