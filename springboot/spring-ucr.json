@@ -1,0 +1,40 @@
+{
+  "labels": {
+    "HAPROXY_GROUP": "external"
+  },
+  "id": "/spring-ucr",
+  "cmd": "cd $MESOS_SANDBOX && $MESOS_SANDBOX/jdk1.8.0_181/bin/java -Dserver.port=$PORT0 -jar springboot-jsp-helloworld-1.0-SNAPSHOT.war",
+  "container": {
+    "type": "MESOS"
+  },
+  "cpus": 1,
+  "disk": 0,
+  "fetch": [
+    {
+      "uri": "https://github.com/linben/dcos-toolbox/raw/master/springboot/springboot-jsp-helloworld-1.0-SNAPSHOT.war",
+      "extract": true,
+      "executable": false,
+      "cache": false
+    },
+    {
+      "uri": "https://s3-us-west-2.amazonaws.com/blin-apj/jdk-8u181-linux-x64.tar.gz",
+      "extract": true,
+      "executable": false,
+      "cache": false
+    }
+  ],
+  "instances": 1,
+  "maxLaunchDelaySeconds": 3600,
+  "mem": 512,
+  "networks": [
+    {
+      "mode": "host"
+    }
+  ],
+  "portDefinitions": [
+  {
+    "protocol": "tcp",
+    "port": 10008
+  }
+]
+}
