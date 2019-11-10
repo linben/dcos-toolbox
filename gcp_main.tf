@@ -43,9 +43,6 @@ module "dcos" {
   dcos_cluster_docker_credentials_write_to_etc = "true"
   dcos_cluster_docker_credentials_dcos_owned = "true"
   dcos_cluster_docker_registry_url = "{{docker_registry_url}}"
-  dcos_use_proxy = "yes"
-  dcos_http_proxy = "example.com"
-  dcos_https_proxy = "example.com"
   dcos_no_proxy = <<EOF
   # YAML
    - "internal.net"
