@@ -1,0 +1,13 @@
+bootstrap_url: http://blin-dcos-ee.oss-cn-shanghai.aliyuncs.com/1.10
+cluster_name: alicloud-dcos
+exhibitor_storage_backend: static
+master_discovery: static
+master_list:
+- 10.0.4.1
+security: permissive
+fault_domain_enabled: false
+superuser_password_hash: $6$rounds=656000$syDI1ZDU7v842M6G$E8XOhhjMZkW.KNfYa1XL30Zfu4XQ2tFh6JyY0Ki05HTUQPgzdC1q746p2q8.ZqgRLziajOV7TYuog3B7G9dAT0
+superuser_username: admin
+resolvers:
+- 100.100.2.136
+- 100.100.2.138
