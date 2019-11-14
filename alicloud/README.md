@@ -24,7 +24,8 @@ CLI tool to simplify uploading of files
 
 **Create OSS bucket and upload files**  
 
-1. Copy all files in genconf/serve to OSS bucket (see copy.sh for example)
+1. Authenticate to Aliyun `osscmd config --id={{config_id}} --host={{oss_hostname}}`
+2. Copy all files in genconf/serve to OSS bucket (see copy.sh for example)
 
 **Creating DC/OS cluster**  
 
