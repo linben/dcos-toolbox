@@ -24,7 +24,7 @@ CLI tool to simplify uploading of files
 
 **Create OSS bucket and upload files**  
 
-1. Copy all files in genconf/serve to OSS bucket (see sample script)
+1. Copy all files in genconf/serve to OSS bucket (see copy.sh for example)
 
 **Creating DC/OS cluster**  
 
@@ -32,6 +32,7 @@ CLI tool to simplify uploading of files
 2. Click on __New Resource Stack__
 3. Copy and Paste ROS template into dialogue box and click __Next__
 4. Enter in __Stack Name__, customize options, then click __Create__
+5. Be sure to enter a valid password (for ECS instances)
 
 **Notes**
 - The region you are deploying into must support the instance types specified
