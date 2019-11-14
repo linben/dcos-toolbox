@@ -22,6 +22,10 @@ CLI tool to simplify uploading of files
 4. `sudo mv osscmd /usr/local/bin`
 5. `sudo cp -R oss /usr/lib/python2.7/site-packages`
 
+**Create OSS bucket and upload files**  
+
+1. Copy all files in genconf/serve to OSS bucket (see sample script)
+
 **Creating DC/OS cluster**  
 
 1. Go to ROS section
