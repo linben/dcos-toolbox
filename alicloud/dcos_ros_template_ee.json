@@ -1,20 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@linben 
-0
-00linben/dcos-toolbox
- Code Issues 0 Pull requests 0 Actions Projects 0 Wiki Security Insights Settings
-dcos-toolbox/alicloud/dcos_ros_template_v2.json
-@linben linben Add files via upload
-3b18b4a on Mar 17
-1072 lines (1070 sloc)  35.5 KB
-  
 {
     "ROSTemplateFormatVersion" : "2015-09-01",
     "Description":"ALIYUN ROS Template",
@@ -1086,15 +1069,3 @@ dcos-toolbox/alicloud/dcos_ros_template_v2.json
         }
     }
 }
-© 2019 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
